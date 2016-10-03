@@ -22,7 +22,7 @@ var step = function() {
 }
 
 var update = function() {
-
+  ball.update();
 };
 
 var player = new Player();
@@ -44,7 +44,7 @@ function Paddle(x, y, width, height) {
   this.height = height;
   this.x_speed = 0;
   this.y_speed = 0;
-}
+};
 
 Paddle.prototype.render = function() {
   context.fillStyle = '#0000FF';
@@ -53,11 +53,11 @@ Paddle.prototype.render = function() {
 
 function Player() {
   this.paddle = new Paddle(175, 580, 50, 10);
-}
+};
 
 function Computer() {
   this.paddle = new Paddle(175, 10, 50, 10);
-}
+};
 
 Player.prototype.render = function () {
   this.paddle.render();
@@ -73,11 +73,16 @@ function Ball(x, y) {
   this.x_speed = 0;
   this.y_speed = 3;
   this.radius = 5;
-}
+};
 
 Ball.prototype.render = function() {
   context.beginPath();
   context.arc(this.x, this.y, this.radius, 2 * Math.PI, false);
   context.fillStyle = '#000'
   context.fill();
-}
+};
+
+Ball.prototype.update = function() {
+  this.x += this.x_speed;
+  this.y += this.y_speed;
+};
