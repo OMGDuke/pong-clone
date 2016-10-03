@@ -9,6 +9,10 @@ var height = 600;
 canvas.width = width;
 canvas.height = height;
 var context = canvas.getContext('2d');
+var player = new Player();
+var computer = new Computer();
+var ball = new Ball(200, 300);
+var keysDown = {};
 
 window.onload = function() {
   document.body.appendChild(canvas);
@@ -23,12 +27,9 @@ var step = function() {
 
 var update = function() {
   player.update();
+  computer.update(ball);
   ball.update(player.paddle, computer.paddle);
 };
-
-var player = new Player();
-var computer = new Computer();
-var ball = new Ball(200, 300);
 
 var render = function() {
   context.fillStyle = '#FF00FF';
@@ -95,6 +96,22 @@ Computer.prototype.render = function () {
   this.paddle.render();
 };
 
+Computer.prototype.update = function (ball) {
+  var x_pos = ball.x;
+  var diff = -((this.paddle.x + (this.paddle.width / 2)) - x_pos);
+  if(diff < 0 && diff < -4) { // max speed left
+    diff = -5;
+  } else if (diff > 0 && diff > 4) { // max speed right
+    diff = 5;
+  }
+  this.paddle.move(diff, 0);
+  if(this.paddle.x < 0) {
+    this.paddle.x = 0;
+  } else if (this.paddle.x + this.paddle.width > 400) {
+    this.paddle.x = 400 - this.paddle.width;
+  }
+};
+
 function Ball(x, y) {
   this.x = x;
   this.y = y;
@@ -120,7 +137,7 @@ Ball.prototype.update = function(paddle1, paddle2) {
 
   if(this.x - 5 < 0) { // colliding with the left wall
     this.x = 5;
-    this.x_speed = - this.x_speed;;
+    this.x_speed = -this.x_speed;
   } else if(this.x + 5 > 400) { //colliding with the right wall
     this.x = 395;
     this.x_speed = -this.x_speed;
@@ -137,7 +154,7 @@ Ball.prototype.update = function(paddle1, paddle2) {
     if(top_y < (paddle1.y + paddle1.height) && bottom_y > paddle1.y && top_x < (paddle1.x + paddle1.width) && bottom_x > paddle1.x) {
       // collding with the players paddle
       this.y_speed = -3;
-      this.x_speed += (paddle2.x_speed / 2);
+      this.x_speed += (paddle1.x_speed / 2);
       this.y += this.y_speed;
     }
   } else {
@@ -149,8 +166,6 @@ Ball.prototype.update = function(paddle1, paddle2) {
     }
   }
 };
-
-var keysDown = {};
 
 window.addEventListener("keydown", function(event) {
   keysDown[event.keyCode] = true;
