@@ -22,6 +22,7 @@ var step = function() {
 }
 
 var update = function() {
+  player.update();
   ball.update(player.paddle, computer.paddle);
 };
 
@@ -51,6 +52,20 @@ Paddle.prototype.render = function() {
   context.fillRect(this.x, this.y, this.width, this.height);
 };
 
+Paddle.prototype.move = function(x, y) {
+  this.x += x;
+  this.y += y;
+  this.x_speed = x;
+  this.y_speed = y;
+  if (this.x < 0) { // paddle reached left wall
+    this.x = 0;
+    this.x_speed = 0;
+  } else if (this.x + this.width > 400) { // paddle reached the right wall
+    this.x = 400 - this.width;
+    this.x_speed = 0;
+  }
+}
+
 function Player() {
   this.paddle = new Paddle(175, 580, 50, 10);
 };
@@ -62,6 +77,19 @@ function Computer() {
 Player.prototype.render = function () {
   this.paddle.render();
 };
+
+Player.prototype.update = function() {
+  for(var key in keysDown) {
+    var value = Number(key);
+    if(value == 37) { // left arrow key
+      this.paddle.move(-4, 0);
+    } else if (value == 39) { // right arrow key
+      this.paddle.move(4, 0);
+    } else {
+      this.paddle.move(0, 0);
+    }
+  }
+}
 
 Computer.prototype.render = function () {
   this.paddle.render();
@@ -106,7 +134,7 @@ Ball.prototype.update = function(paddle1, paddle2) {
   }
 
   if(top_y > 300) {
-    if(top_y < (paddle1.y + paddle1.height) && bottom_y > paddle1.y && top_x < (paddle2.x + paddle2.width) && bottom_x > paddle1.x) {
+    if(top_y < (paddle1.y + paddle1.height) && bottom_y > paddle1.y && top_x < (paddle1.x + paddle1.width) && bottom_x > paddle1.x) {
       // collding with the players paddle
       this.y_speed = -3;
       this.x_speed += (paddle2.x_speed / 2);
@@ -121,3 +149,13 @@ Ball.prototype.update = function(paddle1, paddle2) {
     }
   }
 };
+
+var keysDown = {};
+
+window.addEventListener("keydown", function(event) {
+  keysDown[event.keyCode] = true;
+});
+
+window.addEventListener("keyup", function(event) {
+  delete keysDown[event.keyCode];
+});
