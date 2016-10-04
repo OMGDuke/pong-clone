@@ -12,7 +12,10 @@ var context = canvas.getContext('2d');
 var player = new Player();
 var computer = new Computer();
 var ball = new Ball(200, 300);
+var scoreSheet = new ScoreSheet();
 var keysDown = {};
+var playerScore = 0;
+var computerScore = 0;
 
 window.onload = function() {
   document.body.appendChild(canvas);
@@ -37,7 +40,17 @@ var render = function() {
   player.render();
   computer.render();
   ball.render();
+  scoreSheet.render();
 };
+
+function ScoreSheet() {
+
+}
+
+ScoreSheet.prototype.render = function() {
+  context.fillText(("Player: " + playerScore), 10, 290);
+  context.fillText(("Computer: " + computerScore), 10, 310);
+}
 
 function Paddle(x, y, width, height) {
   this.x = x;
@@ -143,11 +156,12 @@ Ball.prototype.update = function(paddle1, paddle2) {
     this.x_speed = -this.x_speed;
   }
 
-  if(this.y < 0 || this.y > 600) { // point scored
-    this.x_speed = 0;
-    this.y_speed = 3;
-    this.x = 200;
-    this.y = 300;
+  if(this.y < 0) { // Player scored
+    playerScore += 1
+    this.resetPosition();
+  } else if (this.y > 600) { // Computer Scored
+    computerScore += 1
+    this.resetPosition();
   }
 
   if(top_y > 300) {
@@ -165,6 +179,13 @@ Ball.prototype.update = function(paddle1, paddle2) {
       this.y += this.y_speed;
     }
   }
+};
+
+Ball.prototype.resetPosition = function() {
+  this.x_speed = 0;
+  this.y_speed = 3;
+  this.x = 200;
+  this.y = 300;
 };
 
 window.addEventListener("keydown", function(event) {
