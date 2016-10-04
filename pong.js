@@ -16,6 +16,8 @@ var scoreSheet = new ScoreSheet();
 var keysDown = {};
 var playerScore = 0;
 var computerScore = 0;
+var bounce = new Audio("sfx/bounce.wav");
+var score = new Audio("sfx/score.wav");
 
 window.onload = function() {
   document.body.appendChild(canvas);
@@ -158,9 +160,11 @@ Ball.prototype.update = function(paddle1, paddle2) {
 
   if(this.y < 0) { // Player scored
     playerScore += 1
+    score.play();
     this.resetPosition();
   } else if (this.y > 600) { // Computer Scored
     computerScore += 1
+    score.play();
     this.resetPosition();
   }
 
@@ -170,6 +174,7 @@ Ball.prototype.update = function(paddle1, paddle2) {
       this.y_speed = -3;
       this.x_speed += (paddle1.x_speed / 2);
       this.y += this.y_speed;
+      bounce.play();
     }
   } else {
     if(top_y < (paddle2.y + paddle2.height) && bottom_y > paddle2.y && top_x < (paddle2.x + paddle2.width) && bottom_x > paddle2.x) {
@@ -177,6 +182,7 @@ Ball.prototype.update = function(paddle1, paddle2) {
       this.y_speed = 3;
       this.x_speed += (paddle2.x_speed / 2);
       this.y += this.y_speed;
+      bounce.play();
     }
   }
 };
