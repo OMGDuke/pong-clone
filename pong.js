@@ -13,15 +13,13 @@ var player = new Player();
 var computer = new Computer();
 var ball = new Ball(200, 300);
 var scoreSheet = new ScoreSheet();
+var sounds = new Sounds();
 var keysDown = {};
-var playerScore = 0;
-var computerScore = 0;
-var bounce = new Audio("sfx/bounce.wav");
-var score = new Audio("sfx/score.wav");
 
 window.onload = function() {
   document.body.appendChild(canvas);
   animate(step);
+  sounds.music.play();
 };
 
 var step = function() {
@@ -46,13 +44,20 @@ var render = function() {
 };
 
 function ScoreSheet() {
-
+  this.playerScore = 0;
+  this.computerScore = 0;
 }
 
 ScoreSheet.prototype.render = function() {
-  context.fillText(("Player: " + playerScore), 10, 290);
-  context.fillText(("Computer: " + computerScore), 10, 310);
+  context.fillText(("Player: " + this.playerScore), 10, 290);
+  context.fillText(("Computer: " + this.computerScore), 10, 310);
 }
+
+function Sounds() {
+  this.bounce = new Audio("sfx/bounce.wav");
+  this.score = new Audio("sfx/score.wav");
+  this.music = new Audio("sfx/magic-clouds.mp3");
+};
 
 function Paddle(x, y, width, height) {
   this.x = x;
@@ -159,12 +164,12 @@ Ball.prototype.update = function(paddle1, paddle2) {
   }
 
   if(this.y < 0) { // Player scored
-    playerScore += 1
-    score.play();
+    scoreSheet.playerScore += 1
+    sounds.score.play();
     this.resetPosition();
   } else if (this.y > 600) { // Computer Scored
-    computerScore += 1
-    score.play();
+    scoreSheet.computerScore += 1
+    sounds.score.play();
     this.resetPosition();
   }
 
@@ -174,7 +179,7 @@ Ball.prototype.update = function(paddle1, paddle2) {
       this.y_speed = -3;
       this.x_speed += (paddle1.x_speed / 2);
       this.y += this.y_speed;
-      bounce.play();
+      sounds.bounce.play();
     }
   } else {
     if(top_y < (paddle2.y + paddle2.height) && bottom_y > paddle2.y && top_x < (paddle2.x + paddle2.width) && bottom_x > paddle2.x) {
